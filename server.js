@@ -26,6 +26,9 @@ app.use('/', route);
 
 //escutar porta
 server.listen(port);
+//chamando função de tratamento de erros
+server.on('error', onError);
+
 console.log('API rodando na porta ' + port);
 
 //normalizando a porta
@@ -41,4 +44,27 @@ function normalizePort(val){
     }
 
     return false;
+}
+
+//tratando erros
+function onError(error){
+    if(error.syscall !== 'listen'){
+        throw error;
+    }
+
+    const bind = typeof port === 'string' ?
+    'Pipe' + port : 'Port' + port;
+
+    switch(error.code){
+        case 'EACCES' :
+            console.error(bind + ' requires elevated privilage');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.log(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
 }
